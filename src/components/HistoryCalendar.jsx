@@ -64,7 +64,14 @@ function HistoryCalendar() {
   }
 
   const monthName = currentMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
-  const completedDaysInMonth = Object.values(history).filter(day => day.tasks.every(task => task)).length
+  const completedDaysInMonth = Object.entries(history).filter(([date, day]) => {
+    const dayDate = new Date(date + 'T00:00:00')
+    return (
+      dayDate.getMonth() === currentMonth.getMonth()
+      && dayDate.getFullYear() === currentMonth.getFullYear()
+      && day.tasks.every(task => task)
+    )
+  }).length
 
   return (
     <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
@@ -154,6 +161,7 @@ function HistoryCalendar() {
                 >
                   <button
                     onClick={() => dateStr && setShowTooltip(showTooltip === dateStr ? null : dateStr)}
+                    aria-label={dateStr ? `${displayDay} ${monthName}, ${percentage}% completo` : 'Dia vazio'}
                     className={`w-full aspect-square rounded-lg sm:rounded-xl flex items-center justify-center font-semibold text-xs sm:text-sm transition-all ${
                       color
                     } ${

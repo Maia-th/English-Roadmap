@@ -158,11 +158,14 @@ function DailyOffensive() {
           </div>
           <div className="p-5">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Selecione seu nível atual:</p>
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2" role="radiogroup" aria-label="Nível de proficiência">
               {proficiencyLevels.map((level) => (
                 <button
                   key={level}
                   onClick={() => handleLevelUpdate(level)}
+                  aria-pressed={stats.proficiencyLevel === level}
+                  role="radio"
+                  aria-checked={stats.proficiencyLevel === level}
                   className={`px-3 py-2 rounded-lg font-bold transition-smooth ${
                     stats.proficiencyLevel === level
                       ? 'bg-blue-600 text-white'

@@ -28,6 +28,17 @@ const phaseToProficiency = (phase) => {
   return 'C1'
 }
 
+const calculatePhaseFromStartDate = (startDateValue) => {
+  const startDate = new Date(startDateValue)
+  const daysPassed = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24))
+  let phase = 1
+  if (daysPassed > 60) phase = 2
+  if (daysPassed > 120) phase = 3
+  if (daysPassed > 240) phase = 4
+  if (daysPassed > 330) phase = 5
+  return phase
+}
+
 // Simular delay de API
 const delay = (ms = 100) => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -164,13 +175,7 @@ const dataService = {
     const totalTasks = data.dailyTasks.length
 
     // Calcular fase baseado no tempo (simplificado)
-    const startDate = new Date(data.startDate)
-    const daysPassed = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24))
-    let phase = 1
-    if (daysPassed > 60) phase = 2
-    if (daysPassed > 120) phase = 3
-    if (daysPassed > 240) phase = 4
-    if (daysPassed > 330) phase = 5
+    const phase = calculatePhaseFromStartDate(data.startDate)
 
     const proficiencyLevel = await dataService.getProficiencyLevel(phase)
 
@@ -191,7 +196,11 @@ const dataService = {
     await delay()
     const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || JSON.stringify(defaultSettings))
     if (settings.proficiencyLevel) return settings.proficiencyLevel
-    const phase = currentPhase || (await dataService.getStats()).phase
+    let phase = currentPhase
+    if (!phase) {
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
+      phase = calculatePhaseFromStartDate(data.startDate)
+    }
     return phaseToProficiency(phase)
   },
 

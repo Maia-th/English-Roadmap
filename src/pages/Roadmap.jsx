@@ -21,30 +21,34 @@ function Roadmap() {
         {/* Timeline das Fases */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8">🎯 Planejamento de 12 Meses</h2>
-          
-          <div className="space-y-4">
+
+          <div className="relative space-y-6">
+            <div className="hidden md:block absolute left-7 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-300 via-purple-300 to-orange-300 dark:from-blue-700 dark:via-purple-700 dark:to-orange-700" />
             {roadmapData.phases.map((phase, index) => (
-              <div key={phase.id}>
+              <div key={phase.id} className="relative">
+                <div className="hidden md:flex absolute left-4 top-7 w-6 h-6 rounded-full bg-white dark:bg-gray-900 border-4 border-blue-400 dark:border-blue-600 items-center justify-center z-10">
+                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-300">{index + 1}</span>
+                </div>
                 <button
                   onClick={() => setExpandedPhase(expandedPhase === phase.id ? null : phase.id)}
-                  className="w-full group"
+                  className="w-full group md:pl-16"
                 >
-                  <div className={`bg-gradient-to-r ${phase.color} p-6 rounded-lg text-white shadow-lg hover:shadow-xl transition-shadow cursor-pointer`}>
-                    <div className="flex items-center justify-between">
-                      <div className="text-left">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-3xl">{phase.icon}</span>
+                  <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg transition-smooth cursor-pointer">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="text-left flex-1">
+                        <div className="flex flex-wrap items-center gap-3 mb-3">
+                          <span className={`text-2xl p-2 rounded-xl bg-gradient-to-r ${phase.color} text-white shadow-md`}>{phase.icon}</span>
                           <div>
-                            <h3 className="text-2xl font-bold">Phase {phase.id} — {phase.title}</h3>
-                            <p className="text-sm opacity-90">Meses {phase.months}</p>
+                            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Fase {phase.id} — {phase.title}</h3>
+                            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">Meses {phase.months}</p>
                           </div>
                         </div>
-                        <p className="text-sm opacity-75 mt-2">{phase.description}</p>
+                        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">{phase.description}</p>
                       </div>
                       {expandedPhase === phase.id ? (
-                        <ChevronUp size={24} className="text-white" />
+                        <ChevronUp size={24} className="text-gray-500 dark:text-gray-300 mt-1" />
                       ) : (
-                        <ChevronDown size={24} className="text-white" />
+                        <ChevronDown size={24} className="text-gray-500 dark:text-gray-300 mt-1" />
                       )}
                     </div>
                   </div>
@@ -52,7 +56,7 @@ function Roadmap() {
 
                 {/* Detalhes Expandidos */}
                 {expandedPhase === phase.id && (
-                  <div className="mt-4 p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 animate-slideDown">
+                  <div className="mt-4 p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 animate-slideDown md:ml-16">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {/* Foco */}
                       <div>
@@ -81,6 +85,30 @@ function Roadmap() {
                     </div>
                   </div>
                 )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Estratégia */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8">🧭 Estratégia</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {roadmapData.strategies.map((strategy, index) => (
+              <div key={index} className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-smooth">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-2xl">{strategy.icon}</span>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{strategy.title}</h3>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{strategy.description}</p>
+                <ul className="space-y-2">
+                  {strategy.tips.map((tip, tipIndex) => (
+                    <li key={tipIndex} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                      <span className="text-blue-500 font-bold">•</span>
+                      <span>{tip}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>

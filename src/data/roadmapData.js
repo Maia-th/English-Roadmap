@@ -174,6 +174,30 @@ export const roadmapData = {
     },
   ],
 
+  strategies: [
+    {
+      title: 'Consistência diária',
+      description: 'Mantenha contato com inglês todos os dias, mesmo com sessões curtas.',
+      tips: ['Regra mínima de 30 minutos', 'Priorize speaking e listening', 'Evite dias em branco'],
+      accent: 'blue',
+      icon: '📅',
+    },
+    {
+      title: 'Imersão progressiva',
+      description: 'Aumente o uso do inglês no seu ambiente de trabalho e lazer a cada mês.',
+      tips: ['Celular e apps em inglês', 'Consumir conteúdo nativo', 'Estudar tecnologia em inglês'],
+      accent: 'purple',
+      icon: '🌍',
+    },
+    {
+      title: 'Feedback contínuo',
+      description: 'Meça evolução e ajuste o plano com base em resultados reais.',
+      tips: ['Revisão semanal', 'Simulações de conversa', 'Teste de proficiência a cada fase'],
+      accent: 'green',
+      icon: '📈',
+    },
+  ],
+
   mistakes: [
     '❌ Traduzir tudo',
     '❌ Estudar apenas gramática',

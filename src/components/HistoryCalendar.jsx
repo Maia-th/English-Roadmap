@@ -42,9 +42,9 @@ function HistoryCalendar() {
     }
     if (percentage === 100) return 'bg-green-700 hover:bg-green-800 text-white'
     if (percentage >= 75) return 'bg-green-500 hover:bg-green-600 text-white'
-    if (percentage >= 50) return 'bg-emerald-300 hover:bg-emerald-400 text-emerald-950'
-    if (percentage >= 25) return 'bg-amber-300 hover:bg-amber-400 text-amber-950'
-    return 'bg-orange-300 hover:bg-orange-400 text-orange-950'
+    if (percentage >= 50) return 'bg-emerald-300 hover:bg-emerald-400 text-gray-900'
+    if (percentage >= 25) return 'bg-amber-300 hover:bg-amber-400 text-gray-900'
+    return 'bg-orange-300 hover:bg-orange-400 text-gray-900'
   }
 
   const days = []

@@ -163,7 +163,6 @@ function DailyOffensive() {
                 <button
                   key={level}
                   onClick={() => handleLevelUpdate(level)}
-                  aria-pressed={stats.proficiencyLevel === level}
                   role="radio"
                   aria-checked={stats.proficiencyLevel === level}
                   className={`px-3 py-2 rounded-lg font-bold transition-smooth ${

@@ -16,6 +16,18 @@ const defaultData = {
   startDate: new Date(2026, 0, 1).toISOString(),
 }
 
+const defaultSettings = {
+  proficiencyLevel: null,
+}
+
+const phaseToProficiency = (phase) => {
+  if (phase <= 1) return 'A1'
+  if (phase === 2) return 'A2'
+  if (phase === 3) return 'B1'
+  if (phase === 4) return 'B2'
+  return 'C1'
+}
+
 // Simular delay de API
 const delay = (ms = 100) => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -26,6 +38,10 @@ const dataService = {
     const existing = localStorage.getItem(STORAGE_KEY)
     if (!existing) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData))
+    }
+    const existingSettings = localStorage.getItem(SETTINGS_KEY)
+    if (!existingSettings) {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(defaultSettings))
     }
     return dataService.getAllData()
   },
@@ -156,6 +172,8 @@ const dataService = {
     if (daysPassed > 240) phase = 4
     if (daysPassed > 330) phase = 5
 
+    const proficiencyLevel = await dataService.getProficiencyLevel(phase)
+
     return {
       totalDays,
       completedDays,
@@ -163,8 +181,27 @@ const dataService = {
       totalTasks,
       streak: await dataService.getStreak(),
       phase,
+      proficiencyLevel,
       completionRate: totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0,
     }
+  },
+
+  // Obter nível de proficiência atual
+  getProficiencyLevel: async (currentPhase = null) => {
+    await delay()
+    const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || JSON.stringify(defaultSettings))
+    if (settings.proficiencyLevel) return settings.proficiencyLevel
+    const phase = currentPhase || (await dataService.getStats()).phase
+    return phaseToProficiency(phase)
+  },
+
+  // Atualizar nível de proficiência manualmente
+  updateProficiencyLevel: async (level) => {
+    await delay()
+    const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || JSON.stringify(defaultSettings))
+    settings.proficiencyLevel = level
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))
+    return settings.proficiencyLevel
   },
 
   // Obter histórico com filtro

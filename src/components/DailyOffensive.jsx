@@ -137,6 +137,7 @@ function DailyOffensive() {
           href="https://www.efset.org/pt/"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Fazer teste de proficiência (abre em nova aba)"
           className="text-sm text-white/90 hover:text-white underline underline-offset-4"
         >
           Fazer teste de proficiência

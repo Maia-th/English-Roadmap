@@ -4,6 +4,14 @@
 const STORAGE_KEY = 'english_roadmap_data'
 const SETTINGS_KEY = 'english_roadmap_settings'
 
+// Função auxiliar para evitar o bug de fuso horário (timezone) do toISOString()
+const getLocalDateString = (date = new Date()) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}` // Retorna sempre o dia real local, ex: "2026-05-17"
+}
+
 const defaultData = {
   dailyTasks: [
     { id: 0, title: '🎧 Listening / Input', duration: '1h15', completed: false },
@@ -67,7 +75,7 @@ const dataService = {
   // Obter progresso de hoje
   getTodayProgress: async () => {
     await delay()
-    const today = new Date().toISOString().split('T')[0]
+    const today = getLocalDateString() // Correção aplicada aqui
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
     
     if (!data.history[today]) {
@@ -76,7 +84,7 @@ const dataService = {
       if (lastDay !== today) {
         data.history[today] = {
           tasks: data.dailyTasks.map(() => false),
-          lastUpdated: new Date().toISOString(),
+          lastUpdated: new Date().toISOString(), // lastUpdated pode continuar UTC pois é só pra marcação de tempo
         }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
       }
@@ -91,7 +99,7 @@ const dataService = {
   // Atualizar progresso diário
   updateDailyProgress: async (taskIndex, completed) => {
     await delay()
-    const today = new Date().toISOString().split('T')[0]
+    const today = getLocalDateString() // Correção aplicada aqui
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
 
     if (!data.history[today]) {
@@ -115,7 +123,7 @@ const dataService = {
       return { requiresConfirmation: true }
     }
 
-    const today = new Date().toISOString().split('T')[0]
+    const today = getLocalDateString() // Correção aplicada aqui
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
 
     data.history[today] = {
@@ -135,22 +143,34 @@ const dataService = {
     
     if (Object.keys(history).length === 0) return 0
 
-    const days = Object.keys(history).sort().reverse()
     let streak = 0
     let currentDate = new Date()
 
-    for (const day of days) {
-      const dayStr = currentDate.toISOString().split('T')[0]
+    // 1. Verifica HOJE
+    const todayStr = getLocalDateString(currentDate) // Usa a função de data local que criamos antes
+    const todayData = history[todayStr]
+    
+    // Se hoje tem dados e todas as tarefas estão completas (100%)
+    const isTodayCompleted = todayData && todayData.tasks.length > 0 && todayData.tasks.every(task => task)
+    
+    if (isTodayCompleted) {
+      streak++
+    }
+
+    // 2. Volta dia por dia, começando por ONTEM
+    currentDate.setDate(currentDate.getDate() - 1)
+
+    while (true) {
+      const checkDayStr = getLocalDateString(currentDate)
+      const dayData = history[checkDayStr]
       
-      if (day === dayStr) {
-        const completed = history[day].tasks.every(task => task)
-        if (completed) {
-          streak++
-          currentDate.setDate(currentDate.getDate() - 1)
-        } else {
-          break
-        }
+      const isCompleted = dayData && dayData.tasks.length > 0 && dayData.tasks.every(task => task)
+
+      if (isCompleted) {
+        streak++ // Se ontem (e dias anteriores) completou 100%, soma na ofensiva
+        currentDate.setDate(currentDate.getDate() - 1) // Volta mais um dia
       } else {
+        // Se achou um dia no passado que não foi 100%, a ofensiva é quebrada
         break
       }
     }
@@ -163,7 +183,7 @@ const dataService = {
     await delay()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
     const history = data.history
-    const today = new Date().toISOString().split('T')[0]
+    const today = getLocalDateString() // Correção aplicada aqui
     const todayData = history[today]
 
     const totalDays = Object.keys(history).length

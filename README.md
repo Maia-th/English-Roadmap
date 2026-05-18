@@ -1,4 +1,4 @@
-# 🇺🇸 English Roadmap - C1 em 12 Meses
+# 🇺🇸 English Roadmap - C1 em 12 Meses (Versão Beta)
 
 Aplicação web para gerenciar seu progresso no roadmap de inglês, atingindo nível C1 em 12 meses com 3h de estudo diário.
 
@@ -31,14 +31,14 @@ npm run build
 
 ## 🎨 Funcionalidades
 
-✅ **Modo Claro/Escuro**
-✅ **Checkboxes diários** com persistência
-✅ **Dupla confirmação** para reset
-✅ **Data/hora** de última modificação
-✅ **Histórico visual** com cores (verde escuro = 100%)
-✅ **Cálculo automático** de streak (dias seguidos)
-✅ **Responsivo** (mobile, tablet, desktop)
-✅ **LocalStorage** para persistência
+- ✅ **Modo Claro/Escuro**
+- ✅ **Checkboxes diários** com persistência
+- ✅ **Dupla confirmação** para reset
+- ✅ **Data/hora** de última modificação
+- ✅ **Histórico visual** com cores (verde escuro = 100%)
+- ✅ **Cálculo automático** de streak (dias seguidos)
+- ✅ **Responsivo** (mobile, tablet, desktop)
+- ✅ **LocalStorage** para persistência
 
 ## 📁 Estrutura
 
@@ -99,16 +99,3 @@ const streak = await dataService.getStreak();
 - **Tailwind CSS** - Estilos
 - **Lucide React** - Icons
 - **Date-fns** - Manipulação de datas
-
-## 🎯 Roadmap de Desenvolvimento
-
-- [ ] Integração com backend (API)
-- [ ] Autenticação de usuários
-- [ ] Múltiplas trilhas (outras idiomas)
-- [ ] Exportar relatórios
-- [ ] Notificações diárias
-- [ ] Gráficos de progresso
-
-## 📄 Licença
-
-MIT

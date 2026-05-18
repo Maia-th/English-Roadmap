@@ -11,11 +11,9 @@ function DailyRoutine() {
 
   useEffect(() => {
     loadProgress()
-    // Atualizar a cada segundo para mostrar hora em tempo real
-    const interval = setInterval(() => {
-      loadProgress()
-    }, 1000)
-    return () => clearInterval(interval)
+    // REMOVIDO: O setInterval() que rodava a cada segundo foi removido.
+    // Ele deixava a aplicação pesada e não era necessário, pois o estado 
+    // já é atualizado localmente nas funções de clique (toggle e reset).
   }, [])
 
   const loadProgress = async () => {
@@ -25,7 +23,9 @@ function DailyRoutine() {
       ...task,
       completed: progress.tasks[index] || false,
     })))
-    setLastUpdated(new Date(progress.lastUpdated))
+    
+    // Garantindo que a data seja lida corretamente e não quebre se for null
+    setLastUpdated(progress.lastUpdated ? new Date(progress.lastUpdated) : null)
     setIsLoading(false)
   }
 
@@ -33,6 +33,8 @@ function DailyRoutine() {
     const newTasks = [...tasks]
     newTasks[index].completed = !newTasks[index].completed
     setTasks(newTasks)
+    
+    // Atualiza no service e já seta a hora atual no front-end imediatamente
     await dataService.updateDailyProgress(index, newTasks[index].completed)
     setLastUpdated(new Date())
   }
@@ -57,7 +59,9 @@ function DailyRoutine() {
 
   const completedCount = tasks.filter(t => t.completed).length
   const totalCount = tasks.length
-  const completionPercentage = Math.round((completedCount / totalCount) * 100)
+  
+  // Proteção: Previne o erro "NaN" caso totalCount seja 0
+  const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
 
   if (isLoading) {
     return (

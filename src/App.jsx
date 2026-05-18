@@ -26,7 +26,7 @@ function App() {
   }, [isDark])
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-smooth">
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-smooth">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -91,10 +91,10 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-gray-600 dark:text-gray-400 text-sm">
-              © 2026 English Roadmap. Alcançar C1 em 12 meses 🚀
+              © 2026 English Roadmap
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
-              Made with ❤️ by Maia-th
+              Developed by Maia-th
             </p>
           </div>
         </div>

@@ -55,14 +55,14 @@ function DailyOffensive() {
 
   useEffect(() => {
     loadStats()
-    // Atualizar stats a cada 5 segundos
+    // Atualiza a cada 5 segundos para refletir mudanças feitas no componente DailyRoutine
     const interval = setInterval(loadStats, 5000)
     return () => clearInterval(interval)
   }, [])
 
   const loadStats = async () => {
-    const stats = await dataService.getStats()
-    setStats(stats)
+    const statsData = await dataService.getStats()
+    setStats(statsData)
     setIsLoading(false)
   }
 
@@ -78,6 +78,9 @@ function DailyOffensive() {
 
   const offensiveStyles = offensiveStyleByStreak(stats.streak)
   const proficiencyGradient = proficiencyStyleByLevel(stats.proficiencyLevel)
+  
+  // Previne erro visual caso as tasks estejam vazias
+  const progressPercentage = stats.totalTasks > 0 ? (stats.todayCompleted / stats.totalTasks) * 100 : 0
 
   const handleLevelUpdate = async (level) => {
     await dataService.updateProficiencyLevel(level)
@@ -112,7 +115,7 @@ function DailyOffensive() {
         <div className="mt-3 h-2 bg-white/30 rounded-full overflow-hidden">
           <div
             className="h-full bg-white transition-all"
-            style={{ width: `${(stats.todayCompleted / stats.totalTasks) * 100}%` }}
+            style={{ width: `${progressPercentage}%` }}
           />
         </div>
       </div>

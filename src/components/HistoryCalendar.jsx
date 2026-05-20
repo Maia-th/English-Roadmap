@@ -17,17 +17,26 @@ function HistoryCalendar() {
   const [showTooltip, setShowTooltip] = useState(null)
 
   useEffect(() => {
-    loadHistory()
+    // Carrega a primeira vez e remove o loading
+    loadHistory().then(() => setIsLoading(false))
+    
+    // Configura o intervalo para atualizar o calendário sozinho a cada 5 segundos
+    // (Igual foi feito no componente de ofensiva)
+    const interval = setInterval(() => {
+      loadHistory(false) // false indica que não queremos mostrar a tela de 'Carregando' a cada 5s
+    }, 5000)
+
+    return () => clearInterval(interval)
   }, [currentMonth])
 
-  const loadHistory = async () => {
-    setIsLoading(true)
+  const loadHistory = async (showLoading = true) => {
+    if (showLoading) setIsLoading(true)
     const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
     const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
     
     const filtered = await dataService.getHistoryFiltered(firstDay, lastDay)
     setHistory(filtered)
-    setIsLoading(false)
+    // Nota: O setIsLoading(false) da primeira carga agora é gerido no useEffect
   }
 
   const getDaysInMonth = (date) => {
@@ -40,18 +49,25 @@ function HistoryCalendar() {
 
   const getCompletionPercentage = (dateStr) => {
     if (!history[dateStr]) return 0
+    if (!history[dateStr].tasks || history[dateStr].tasks.length === 0) return 0
     const completed = history[dateStr].tasks.filter(t => t).length
     return Math.round((completed / history[dateStr].tasks.length) * 100)
   }
 
   const getDayColor = (dateStr, percentage) => {
-    if (percentage === 0 && !history[dateStr]) {
+    // CORREÇÃO 1: Se a porcentagem é 0, independente de existir ou não no histórico,
+    // a cor deve ser a neutra (cinza).
+    if (percentage === 0) {
       return 'bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
     }
+    
+    // Se for maior que 0, entra nas regras de cor:
     if (percentage === 100) return 'bg-green-700 hover:bg-green-800 text-white'
     if (percentage >= 75) return 'bg-green-500 hover:bg-green-600 text-white'
     if (percentage >= 50) return 'bg-emerald-300 hover:bg-emerald-400 text-gray-900'
     if (percentage >= 25) return 'bg-amber-300 hover:bg-amber-400 text-gray-900'
+    
+    // Fallback para 1% a 24% (já que 0% foi tratado no começo)
     return 'bg-orange-300 hover:bg-orange-400 text-gray-900'
   }
 
@@ -65,7 +81,7 @@ function HistoryCalendar() {
     days.push(null)
   }
 
-  // Dias do mês (corrigido para fuso horário local)
+  // Dias do mês
   for (let i = 1; i <= daysInMonth; i++) {
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i)
     days.push(getLocalDateString(date))
@@ -73,12 +89,12 @@ function HistoryCalendar() {
 
   const monthName = currentMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
   
-  // Lógica corrigida para evitar bugs de parsing com T00:00:00
   const completedDaysInMonth = Object.entries(history).filter(([dateStr, day]) => {
     const [year, month] = dateStr.split('-')
     return (
       parseInt(year, 10) === currentMonth.getFullYear()
       && parseInt(month, 10) === currentMonth.getMonth() + 1
+      && day.tasks && day.tasks.length > 0
       && day.tasks.every(task => task)
     )
   }).length
@@ -116,15 +132,13 @@ function HistoryCalendar() {
         </div>
       </div>
 
-      {/* Container Flex: Lado a Lado no Desktop (lg:flex-row), Empilhado no Mobile (flex-col) */}
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
         
-        {/* Legenda (Vem primeiro no código para ficar em cima no mobile) */}
+        {/* Legenda */}
         <div className="w-full lg:w-48 xl:w-56 flex-shrink-0">
           <h3 className="text-sm font-semibold mb-3 hidden lg:block text-gray-700 dark:text-gray-300">
             Legenda
           </h3>
-          {/* No mobile: 2 ou 3 colunas. No desktop (lg): 1 coluna (lista vertical) */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-2 text-xs">
             <div className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50">
               <div className="w-4 h-4 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded flex-shrink-0" />
@@ -155,20 +169,17 @@ function HistoryCalendar() {
 
         {/* Calendário */}
         <div className="w-full lg:flex-1 overflow-x-auto">
-          <div className="min-w-[320px] lg:max-w-full lg:h-[350px] flex flex-col rounded-xl border border-gray-100 dark:border-gray-700 p-2 sm:p-3 mx-auto">
+          <div className="min-w-[250px] lg:max-w-full lg:h-[350px] flex flex-col rounded-xl border border-gray-100 dark:border-gray-700 p-2 sm:p-3 mx-auto">
             <div className="grid grid-cols-7 lg:grid-rows-7 gap-1 sm:gap-2 flex-1">
-              {/* Cabeçalho dos dias da semana */}
               {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].map(day => (
                 <div key={day} className="h-8 sm:h-10 lg:h-auto flex items-center justify-center font-semibold text-gray-500 dark:text-gray-400 text-[11px] sm:text-xs">
                   {day}
                 </div>
               ))}
 
-              {/* Dias */}
               {days.map((dateStr, index) => {
                 const percentage = dateStr ? getCompletionPercentage(dateStr) : 0
                 const color = dateStr ? getDayColor(dateStr, percentage) : 'bg-transparent'
-                // Pegando o dia correto da string (ex: '2026-05-17' -> 17)
                 const displayDay = dateStr ? parseInt(dateStr.split('-')[2], 10) : ''
                 const isToday = dateStr === todayStr
 
@@ -194,8 +205,7 @@ function HistoryCalendar() {
                       <span className={dateStr ? '' : 'invisible'}>{displayDay}</span>
                     </button>
 
-                    {/* Tooltip */}
-                    {showTooltip === dateStr && history[dateStr] && (
+                    {showTooltip === dateStr && history[dateStr] && percentage > 0 && (
                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-900 dark:bg-gray-700 text-white text-xs py-2 px-3 rounded whitespace-nowrap z-10 shadow-lg">
                         {percentage}% completo
                         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700" />

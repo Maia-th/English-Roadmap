@@ -1,15 +1,13 @@
 // Data Service - Simulando API com LocalStorage
-// Futuramente, basta trocar localStorage por fetch('/api/...')
 
 const STORAGE_KEY = 'english_roadmap_data'
 const SETTINGS_KEY = 'english_roadmap_settings'
 
-// Função auxiliar para evitar o bug de fuso horário (timezone) do toISOString()
 const getLocalDateString = (date = new Date()) => {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}` // Retorna sempre o dia real local, ex: "2026-05-17"
+  return `${year}-${month}-${day}`
 }
 
 const defaultData = {
@@ -19,11 +17,18 @@ const defaultData = {
     { id: 2, title: '📚 Vocabulary', duration: '30m', completed: false },
     { id: 3, title: '✍️ Grammar & Writing', duration: '30m', completed: false },
   ],
-  history: {}, // { YYYY-MM-DD: { tasks: [true, false, ...], lastUpdated: timestamp } }
+  history: {}, 
   currentPhase: 1,
-  startDate: new Date(2026, 0, 1).toISOString(),
+  startDate: new Date().toISOString(),
+  
+  // ESTATÍSTICAS DE QUESTÕES
   questionStats: { total: 0, correct: 0, wrong: 0 },
-  answeredQuestions: {} // Estrutura: { 'q1': { lastSeen: '2026-05-18T...', isCorrect: true } }
+  questionStatsByLevel: {}, // ex: { 'A1': { total: 0, correct: 0, wrong: 0 } }
+  questionStatsByTheme: {}, // ex: { 'Grammar': { total: 0, correct: 0, wrong: 0 } }
+  answeredQuestions: {}, 
+
+  // DADOS DOS FLASHCARDS
+  flashcardsStatus: {} // ex: { 'f1': { status: 'review', lastReviewed: '2026...' } }
 }
 
 const defaultSettings = {
@@ -49,11 +54,9 @@ const calculatePhaseFromStartDate = (startDateValue) => {
   return phase
 }
 
-// Simular delay de API
 const delay = (ms = 100) => new Promise(resolve => setTimeout(resolve, ms))
 
 const dataService = {
-  // Inicializar dados
   initialize: async () => {
     await delay()
     const existing = localStorage.getItem(STORAGE_KEY)
@@ -67,14 +70,12 @@ const dataService = {
     return dataService.getAllData()
   },
 
-  // Obter todos os dados
   getAllData: async () => {
     await delay()
     const data = localStorage.getItem(STORAGE_KEY)
     return data ? JSON.parse(data) : defaultData
   },
 
-  // Obter progresso de hoje
   getTodayProgress: async () => {
     await delay()
     const today = getLocalDateString()
@@ -97,7 +98,6 @@ const dataService = {
     }
   },
 
-  // Atualizar progresso diário
   updateDailyProgress: async (taskIndex, completed) => {
     await delay()
     const today = getLocalDateString()
@@ -117,7 +117,6 @@ const dataService = {
     return data.history[today]
   },
 
-  // Resetar dia com dupla confirmação
   resetDailyProgress: async (confirmed = false) => {
     await delay()
     if (!confirmed) {
@@ -136,7 +135,6 @@ const dataService = {
     return data.history[today]
   },
 
-  // Calcular dias seguidos (streak)
   getStreak: async () => {
     await delay()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
@@ -146,22 +144,17 @@ const dataService = {
 
     let streak = 0
     let currentDate = new Date()
-
     const todayStr = getLocalDateString(currentDate)
     const todayData = history[todayStr]
-    
     const isTodayCompleted = todayData && todayData.tasks.length > 0 && todayData.tasks.every(task => task)
     
-    if (isTodayCompleted) {
-      streak++
-    }
+    if (isTodayCompleted) streak++
 
     currentDate.setDate(currentDate.getDate() - 1)
 
     while (true) {
       const checkDayStr = getLocalDateString(currentDate)
       const dayData = history[checkDayStr]
-      
       const isCompleted = dayData && dayData.tasks.length > 0 && dayData.tasks.every(task => task)
 
       if (isCompleted) {
@@ -175,7 +168,6 @@ const dataService = {
     return streak
   },
 
-  // Obter estatísticas gerais
   getStats: async () => {
     await delay()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
@@ -190,7 +182,6 @@ const dataService = {
 
     const todayCompleted = todayData ? todayData.tasks.filter(t => t).length : 0
     const totalTasks = data.dailyTasks.length
-
     const phase = calculatePhaseFromStartDate(data.startDate)
     const proficiencyLevel = await dataService.getProficiencyLevel(phase)
 
@@ -206,7 +197,6 @@ const dataService = {
     }
   },
 
-  // Obter nível de proficiência atual
   getProficiencyLevel: async (currentPhase = null) => {
     await delay()
     const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || JSON.stringify(defaultSettings))
@@ -219,7 +209,6 @@ const dataService = {
     return phaseToProficiency(phase)
   },
 
-  // Atualizar nível de proficiência manualmente
   updateProficiencyLevel: async (level) => {
     await delay()
     const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || JSON.stringify(defaultSettings))
@@ -228,12 +217,10 @@ const dataService = {
     return settings.proficiencyLevel
   },
 
-  // Obter histórico com filtro
   getHistoryFiltered: async (startDate, endDate) => {
     await delay()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
     const history = data.history
-
     const filtered = {}
     const start = new Date(startDate).getTime()
     const end = new Date(endDate).getTime()
@@ -244,25 +231,21 @@ const dataService = {
         filtered[date] = dayData
       }
     }
-
     return filtered
   },
 
-  // Obter todas as datas com dados
   getAllDates: async () => {
     await delay()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
     return Object.keys(data.history).sort()
   },
 
-  // Obter dado de um dia específico
   getDayData: async (dateStr) => {
     await delay()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
     return data.history[dateStr] || null
   },
 
-  // Calcular porcentagem de conclusão de um dia
   getDayCompletionPercentage: async (dateStr) => {
     await delay()
     const dayData = await dataService.getDayData(dateStr)
@@ -271,45 +254,56 @@ const dataService = {
     return Math.round((completed / dayData.tasks.length) * 100)
   },
 
-  // Obter cor do dia baseado na conclusão
   getDayColor: async (dateStr) => {
     const percentage = await dataService.getDayCompletionPercentage(dateStr)
-    if (percentage === 0) return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
-    if (percentage === 100) return 'bg-green-700 dark:bg-green-600'
+    if (percentage === 0) return 'bg-white border border-gray-200'
+    if (percentage === 100) return 'bg-green-700'
     if (percentage >= 75) return 'bg-green-500'
     if (percentage >= 50) return 'bg-green-300'
     if (percentage >= 25) return 'bg-yellow-300'
     return 'bg-orange-300'
   },
 
-  // Obter estatísticas das questões
+  // --- FUNÇÕES DE QUESTÕES ---
   getQuestionStats: async () => {
     await delay()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
-    return data.questionStats || { total: 0, correct: 0, wrong: 0 }
+    return {
+      global: data.questionStats || { total: 0, correct: 0, wrong: 0 },
+      byLevel: data.questionStatsByLevel || {},
+      byTheme: data.questionStatsByTheme || {}
+    }
   },
 
-  // Obter questões respondidas
   getAnsweredQuestions: async () => {
     await delay()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
     return data.answeredQuestions || {}
   },
 
-  // Salvar resposta de questão
-  saveQuestionAnswer: async (questionId, isCorrect) => {
+  saveQuestionAnswer: async (questionId, isCorrect, level, theme) => {
     await delay()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
     
     if (!data.questionStats) data.questionStats = { total: 0, correct: 0, wrong: 0 }
+    if (!data.questionStatsByLevel) data.questionStatsByLevel = {}
+    if (!data.questionStatsByTheme) data.questionStatsByTheme = {}
     if (!data.answeredQuestions) data.answeredQuestions = {}
 
+    if (!data.questionStatsByLevel[level]) data.questionStatsByLevel[level] = { total: 0, correct: 0, wrong: 0 }
+    if (!data.questionStatsByTheme[theme]) data.questionStatsByTheme[theme] = { total: 0, correct: 0, wrong: 0 }
+
     data.questionStats.total += 1
-    if (isCorrect) {
-      data.questionStats.correct += 1
-    } else {
-      data.questionStats.wrong += 1
-    }
+    if (isCorrect) data.questionStats.correct += 1
+    else data.questionStats.wrong += 1
+
+    data.questionStatsByLevel[level].total += 1
+    if (isCorrect) data.questionStatsByLevel[level].correct += 1
+    else data.questionStatsByLevel[level].wrong += 1
+
+    data.questionStatsByTheme[theme].total += 1
+    if (isCorrect) data.questionStatsByTheme[theme].correct += 1
+    else data.questionStatsByTheme[theme].wrong += 1
 
     data.answeredQuestions[questionId] = {
       lastSeen: new Date().toISOString(),
@@ -317,15 +311,35 @@ const dataService = {
     }
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-    return { stats: data.questionStats, answered: data.answeredQuestions }
+    return true
   },
 
-  // Resetar tudo (para testes)
+  // --- FUNÇÕES DE FLASHCARDS ---
+  getFlashcardsStatus: async () => {
+    await delay()
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
+    return data.flashcardsStatus || {}
+  },
+
+  saveFlashcardStatus: async (cardId, status) => {
+    await delay()
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
+    if (!data.flashcardsStatus) data.flashcardsStatus = {}
+
+    data.flashcardsStatus[cardId] = {
+      status: status, // 'mastered' ou 'review'
+      lastReviewed: new Date().toISOString()
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    return data.flashcardsStatus
+  },
+
   reset: async () => {
     await delay()
     localStorage.removeItem(STORAGE_KEY)
     return dataService.initialize()
-  },
+  }
 }
 
 export default dataService

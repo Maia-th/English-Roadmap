@@ -4,12 +4,15 @@ import DailyRoutine from '../components/DailyRoutine'
 import PlatformLinks from '../components/PlatformLinks'
 import HistoryCalendar from '../components/HistoryCalendar'
 import QuestionStats from '../components/QuestionStats'
+import FlashcardStats from '../components/FlashcardStats' // NOVO IMPORTE
 
 function Dashboard() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-950 dark:to-gray-900 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-950 dark:to-gray-900 py-8 transition-smooth">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Hero Section */}
+        
+        {/* ... Hero, Ofensiva, Rotina, Plataformas ... */}
+        
         <div className="mb-12">
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-2">
             🚀 Bem-vindo ao seu Dashboard
@@ -19,30 +22,32 @@ function Dashboard() {
           </p>
         </div>
 
-        {/* 1. Ofensiva (Streak, Hoje, Fase) */}
         <section className="mb-12">
           <DailyOffensive />
         </section>
 
-        {/* 2. Rotina Diária (Cards com Checkboxes) */}
         <section className="mb-12">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
             <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">⏰ Rotina Diária (3h)</h2>
             <DailyRoutine />
           </div>
         </section>
 
-        {/* 3. Links das Ferramentas */}
         <section className="mb-12">
           <PlatformLinks />
         </section>
 
-        {/* 4. Desempenho em Questões */}
+        {/* ESTATÍSTICAS DE QUESTÕES */}
         <section>
           <QuestionStats />
         </section>
 
-        {/* 5. Histórico */}
+        {/* ESTATÍSTICAS DE FLASHCARDS */}
+        <section>
+          <FlashcardStats />
+        </section>
+
+        {/* HISTÓRICO */}
         <section>
           <HistoryCalendar />
         </section>

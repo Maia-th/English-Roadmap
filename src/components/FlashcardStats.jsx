@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Target, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Layers, CheckCircle2, Clock } from 'lucide-react'
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid,
   PieChart, Pie, Cell
 } from 'recharts'
 import dataService from '../services/dataService'
+import { flashcardsData } from '../data/flashcardsData'
 
-// Paleta de cores vibrantes para o gráfico de Donut (Temas)
 const THEME_COLORS = [
   '#3B82F6', // Blue
   '#10B981', // Emerald
@@ -17,7 +17,6 @@ const THEME_COLORS = [
   '#F43F5E', // Rose
 ]
 
-// Componente customizado para os rótulos dentro das barras
 const CustomBarLabel = ({ x, y, width, height, value }) => {
   if (!value || value === 0) return null;
   return (
@@ -35,8 +34,8 @@ const CustomBarLabel = ({ x, y, width, height, value }) => {
   );
 };
 
-function QuestionStats() {
-  const [stats, setStats] = useState({ global: { total: 0, correct: 0, wrong: 0 }, byLevel: {}, byTheme: {} })
+function FlashcardStats() {
+  const [stats, setStats] = useState({ total: 0, mastered: 0, review: 0, byLevel: {}, byTheme: {} })
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -44,24 +43,50 @@ function QuestionStats() {
   }, [])
 
   const loadStats = async () => {
-    const data = await dataService.getQuestionStats()
-    setStats(data)
+    const statusData = await dataService.getFlashcardsStatus()
+    
+    let total = 0
+    let mastered = 0
+    let review = 0
+    const byLevel = {}
+    const byTheme = {}
+
+    // Processa os dados cruzando o progresso salvo com a base de flashcards
+    flashcardsData.forEach(card => {
+      const cardStatus = statusData[card.id]
+      if (cardStatus) {
+        total++
+        if (cardStatus.status === 'mastered') mastered++
+        else if (cardStatus.status === 'review') review++
+
+        // Agrupar por Nível
+        if (!byLevel[card.level]) byLevel[card.level] = { mastered: 0, review: 0 }
+        if (cardStatus.status === 'mastered') byLevel[card.level].mastered++
+        else if (cardStatus.status === 'review') byLevel[card.level].review++
+
+        // Agrupar por Tema (Conta o total de interações no tema)
+        if (!byTheme[card.theme]) byTheme[card.theme] = 0
+        byTheme[card.theme]++
+      }
+    })
+
+    setStats({ total, mastered, review, byLevel, byTheme })
     setIsLoading(false)
   }
 
-  const accuracy = stats.global.total > 0 ? Math.round((stats.global.correct / stats.global.total) * 100) : 0
+  const masteryRate = stats.total > 0 ? Math.round((stats.mastered / stats.total) * 100) : 0
 
   // 1. Dados para o Gráfico de Barras (Nível)
   const levelData = Object.keys(stats.byLevel).map(key => ({
     name: key,
-    Acertos: stats.byLevel[key].correct,
-    Erros: stats.byLevel[key].wrong,
+    Dominados: stats.byLevel[key].mastered,
+    Revisar: stats.byLevel[key].review,
   })).sort((a, b) => a.name.localeCompare(b.name))
 
   // 2. Dados para o Gráfico de Rosca (Tema)
   const themeDonutData = Object.keys(stats.byTheme).map(key => ({
     name: key,
-    value: stats.byTheme[key].total
+    value: stats.byTheme[key]
   })).filter(item => item.value > 0)
 
   if (isLoading) return <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
@@ -70,43 +95,43 @@ function QuestionStats() {
     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm mb-12 transition-smooth">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4 sm:gap-0">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-          <Target size={28} className="text-blue-600 dark:text-blue-400" />
-          Questões
+          <Layers size={28} className="text-blue-600 dark:text-blue-400" />
+          Flashcards
         </h2>
         <span className="text-xl font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-4 py-2 rounded-lg self-end sm:self-auto">
-          {accuracy}% de Acerto
+          {masteryRate}% Dominados
         </span>
       </div>
 
       {/* Cards de Resumo */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-600">
-          <div className="text-gray-500 dark:text-gray-400 text-sm font-semibold mb-1">Total Resolvidas</div>
-          <div className="text-3xl font-bold text-gray-800 dark:text-gray-100">{stats.global.total}</div>
+          <div className="text-gray-500 dark:text-gray-400 text-sm font-semibold mb-1">Total Vistos</div>
+          <div className="text-3xl font-bold text-gray-800 dark:text-gray-100">{stats.total}</div>
         </div>
         
         <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-800/50">
           <div className="flex items-center gap-2 text-green-700 dark:text-green-400 text-sm font-semibold mb-1">
-            <CheckCircle2 size={16} /> Acertos
+            <CheckCircle2 size={16} /> Dominados
           </div>
-          <div className="text-3xl font-bold text-green-700 dark:text-green-500">{stats.global.correct}</div>
+          <div className="text-3xl font-bold text-green-700 dark:text-green-500">{stats.mastered}</div>
         </div>
 
         <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-800/50">
           <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm font-semibold mb-1">
-            <AlertCircle size={16} /> Erros
+            <Clock size={16} /> Para Revisão
           </div>
-          <div className="text-3xl font-bold text-red-600 dark:text-red-500">{stats.global.wrong}</div>
+          <div className="text-3xl font-bold text-red-600 dark:text-red-500">{stats.review}</div>
         </div>
       </div>
 
       {/* Gráficos */}
-      {stats.global.total > 0 && (
+      {stats.total > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           
-          {/* Gráfico 1: Rosca (Questões por Tema) */}
+          {/* Gráfico 1: Rosca (Flashcards por Tema) */}
           <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">Questões por Tema</h3>
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">Vistos por Tema</h3>
             <div className="h-64 w-full"> 
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -118,7 +143,6 @@ function QuestionStats() {
                     outerRadius={75}
                     paddingAngle={5}
                     dataKey="value"
-                    // Rótulos externos com a percentagem
                     label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
                     labelLine={{ stroke: '#888888', strokeWidth: 1, opacity: 0.5 }}
                   >
@@ -131,16 +155,15 @@ function QuestionStats() {
                     contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', color: '#f3f4f6', borderRadius: '0.5rem' }}
                     itemStyle={{ color: '#e5e7eb' }}
                   />
-                  {/* Legenda na parte inferior central */}
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ color: '#888888', fontSize: '14px', paddingTop: '20px' }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          {/* Gráfico 2: Barras (Acertos/Erros por Nível) */}
+          {/* Gráfico 2: Barras (Dominados/Revisar por Nível) */}
           <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">Desempenho por Nível</h3>
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">Status por Nível</h3>
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={levelData} margin={{ top: 20, right: 0, left: 0, bottom: 0 }}>
@@ -152,8 +175,8 @@ function QuestionStats() {
                     contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', color: '#f3f4f6', borderRadius: '0.5rem' }}
                   />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ color: '#888888', fontSize: '14px', paddingTop: '10px' }} />
-                  <Bar dataKey="Acertos" stackId="a" fill="#22c55e" radius={[0, 0, 4, 4]} maxBarSize={50} label={<CustomBarLabel />} />
-                  <Bar dataKey="Erros" stackId="a" fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={50} label={<CustomBarLabel />} />
+                  <Bar dataKey="Dominados" stackId="a" fill="#22c55e" radius={[0, 0, 4, 4]} maxBarSize={50} label={<CustomBarLabel />} />
+                  <Bar dataKey="Revisar" stackId="a" fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={50} label={<CustomBarLabel />} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -165,4 +188,4 @@ function QuestionStats() {
   )
 }
 
-export default QuestionStats
+export default FlashcardStats

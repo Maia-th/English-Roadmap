@@ -240,7 +240,7 @@ export const tracksData = {
     roadmapHeroSubtitle: 'Estrutura completa com 5 fases progressivas para alcançar nível profissional em espanhol',
     finalRuleStudy: 'Não tente "estudar espanhol".',
     finalRuleLive: 'Tente viver parcialmente em espanhol todos os dias.',
-    proficiencyTestUrl: 'https://www.cervantes.to/test_inicial.html',
+    proficiencyTestUrl: 'https://www.cervantes.es/lengua_y_ensenanza/nivel_espanol/default.htm',
     dailyTasks: [
       { id: 0, title: '🎧 Escucha / Input', duration: '1h15', completed: false },
       { id: 1, title: '🗣️ Conversación', duration: '45m', completed: false },

@@ -1,23 +1,24 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
+import type { TrackData } from '@/types'
 
-function Roadmap({ trackData }) {
-  const [expandedPhase, setExpandedPhase] = useState(null)
+interface RoadmapProps {
+  trackData: TrackData
+}
+
+function Roadmap({ trackData }: RoadmapProps) {
+  const [expandedPhase, setExpandedPhase] = useState<number | null>(null)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white dark:from-gray-950 dark:to-gray-900 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            {trackData.roadmapHeroTitle}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-            {trackData.roadmapHeroSubtitle}
-          </p>
+          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">{trackData.roadmapHeroTitle}</h1>
+          <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">{trackData.roadmapHeroSubtitle}</p>
         </div>
 
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8">�� Planejamento de 12 Meses</h2>
+          <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8">📊 Planejamento de 12 Meses</h2>
 
           <div className="relative space-y-6">
             <div className="hidden md:block absolute left-7 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-300 via-purple-300 to-orange-300 dark:from-blue-700 dark:via-purple-700 dark:to-orange-700" />
@@ -26,17 +27,16 @@ function Roadmap({ trackData }) {
                 <div className="hidden md:flex absolute left-4 top-7 w-6 h-6 rounded-full bg-white dark:bg-gray-900 border-4 border-blue-400 dark:border-blue-600 items-center justify-center z-10">
                   <span className="text-[10px] font-bold text-blue-600 dark:text-blue-300">{index + 1}</span>
                 </div>
-                <button
-                  onClick={() => setExpandedPhase(expandedPhase === phase.id ? null : phase.id)}
-                  className="w-full group md:pl-16"
-                >
+                <button onClick={() => setExpandedPhase(expandedPhase === phase.id ? null : phase.id)} className="w-full group md:pl-16">
                   <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg transition-smooth cursor-pointer">
                     <div className="flex items-start justify-between gap-4">
                       <div className="text-left flex-1">
                         <div className="flex flex-wrap items-center gap-3 mb-3">
                           <span className={`text-2xl p-2 rounded-xl bg-gradient-to-r ${phase.color} text-white shadow-md`}>{phase.icon}</span>
                           <div>
-                            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Fase {phase.id} — {phase.title}</h3>
+                            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+                              Fase {phase.id} — {phase.title}
+                            </h3>
                             <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">Meses {phase.months}</p>
                           </div>
                         </div>
@@ -57,8 +57,8 @@ function Roadmap({ trackData }) {
                       <div>
                         <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">📍 Foco Principal</h4>
                         <ul className="space-y-2">
-                          {phase.focus.map((item, i) => (
-                            <li key={i} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
+                          {phase.focus.map((item) => (
+                            <li key={item} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
                               <span className="text-blue-500 font-bold mt-1">→</span>
                               <span>{item}</span>
                             </li>
@@ -69,8 +69,8 @@ function Roadmap({ trackData }) {
                       <div>
                         <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">🎯 Objetivos</h4>
                         <ul className="space-y-2">
-                          {phase.goals.map((goal, i) => (
-                            <li key={i} className="text-gray-700 dark:text-gray-300">
+                          {phase.goals.map((goal) => (
+                            <li key={goal} className="text-gray-700 dark:text-gray-300">
                               {goal}
                             </li>
                           ))}
@@ -87,16 +87,16 @@ function Roadmap({ trackData }) {
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8">🧭 Estratégia</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {trackData.strategies.map((strategy, index) => (
-              <div key={index} className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-smooth">
+            {trackData.strategies.map((strategy) => (
+              <div key={`${strategy.title}-${trackData.id}`} className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-smooth">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-2xl">{strategy.icon}</span>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{strategy.title}</h3>
                 </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">{strategy.description}</p>
                 <ul className="space-y-2">
-                  {strategy.tips.map((tip, tipIndex) => (
-                    <li key={tipIndex} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                  {strategy.tips.map((tip) => (
+                    <li key={tip} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
                       <span className="text-blue-500 font-bold">•</span>
                       <span>{tip}</span>
                     </li>
@@ -110,8 +110,8 @@ function Roadmap({ trackData }) {
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8">🗣️ Milestones de Speaking</h2>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {trackData.speakingMilestones.map((milestone, index) => (
-              <div key={index} className="p-4 bg-white dark:bg-gray-800 border-2 border-blue-400 dark:border-blue-600 rounded-lg text-center">
+            {trackData.speakingMilestones.map((milestone) => (
+              <div key={`${trackData.id}-${milestone.month}`} className="p-4 bg-white dark:bg-gray-800 border-2 border-blue-400 dark:border-blue-600 rounded-lg text-center">
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">Mês {milestone.month}</div>
                 <p className="text-gray-700 dark:text-gray-300 font-medium">{milestone.goal}</p>
               </div>
@@ -122,12 +122,12 @@ function Roadmap({ trackData }) {
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-8">📈 Indicadores de Nível</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {trackData.levelIndicators.map((level, index) => (
-              <div key={index} className="p-6 bg-white dark:bg-gray-800 rounded-lg border-2 border-purple-400 dark:border-purple-600 hover:shadow-lg transition-shadow">
+            {trackData.levelIndicators.map((level) => (
+              <div key={`${trackData.id}-${level.level}`} className="p-6 bg-white dark:bg-gray-800 rounded-lg border-2 border-purple-400 dark:border-purple-600 hover:shadow-lg transition-shadow">
                 <h3 className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-4">{level.level}</h3>
                 <ul className="space-y-2">
-                  {level.characteristics.map((char, i) => (
-                    <li key={i} className="flex items-start gap-2 text-gray-700 dark:text-gray-300 text-sm">
+                  {level.characteristics.map((char) => (
+                    <li key={char} className="flex items-start gap-2 text-gray-700 dark:text-gray-300 text-sm">
                       <span className="text-purple-500 font-bold">✓</span>
                       <span>{char}</span>
                     </li>
@@ -142,8 +142,8 @@ function Roadmap({ trackData }) {
           <div className="bg-red-50 dark:bg-red-900/20 p-8 rounded-lg border-2 border-red-200 dark:border-red-800">
             <h2 className="text-2xl font-bold text-red-700 dark:text-red-400 mb-6">⚠️ Erros que MAIS Atrasam</h2>
             <ul className="space-y-3">
-              {trackData.mistakes.map((mistake, index) => (
-                <li key={index} className="text-gray-700 dark:text-gray-300 font-medium">
+              {trackData.mistakes.map((mistake) => (
+                <li key={mistake} className="text-gray-700 dark:text-gray-300 font-medium">
                   {mistake}
                 </li>
               ))}
@@ -153,8 +153,8 @@ function Roadmap({ trackData }) {
           <div className="bg-green-50 dark:bg-green-900/20 p-8 rounded-lg border-2 border-green-200 dark:border-green-800">
             <h2 className="text-2xl font-bold text-green-700 dark:text-green-400 mb-6">✅ O que MAIS Acelera</h2>
             <ul className="space-y-3">
-              {trackData.accelerators.map((accelerator, index) => (
-                <li key={index} className="text-gray-700 dark:text-gray-300 font-medium">
+              {trackData.accelerators.map((accelerator) => (
+                <li key={accelerator} className="text-gray-700 dark:text-gray-300 font-medium">
                   {accelerator}
                 </li>
               ))}
@@ -169,14 +169,9 @@ function Roadmap({ trackData }) {
             <div>
               <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-4">Beginner / Intermediate</h3>
               <ul className="space-y-3">
-                {trackData.platforms.beginner.map((platform, i) => (
-                  <li key={i}>
-                    <a
-                      href={platform.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline font-medium"
-                    >
+                {trackData.platforms.beginner.map((platform) => (
+                  <li key={platform.name}>
+                    <a href={platform.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline font-medium">
                       → {platform.name}
                     </a>
                   </li>
@@ -187,14 +182,9 @@ function Roadmap({ trackData }) {
             <div>
               <h3 className="text-xl font-bold text-purple-600 dark:text-purple-400 mb-4">Conteúdo Técnico</h3>
               <ul className="space-y-3">
-                {trackData.platforms.technical.map((platform, i) => (
-                  <li key={i}>
-                    <a
-                      href={platform.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:underline font-medium"
-                    >
+                {trackData.platforms.technical.map((platform) => (
+                  <li key={platform.name}>
+                    <a href={platform.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:underline font-medium">
                       → {platform.name}
                     </a>
                   </li>
@@ -205,14 +195,9 @@ function Roadmap({ trackData }) {
             <div>
               <h3 className="text-xl font-bold text-green-600 dark:text-green-400 mb-4">Conteúdo Avançado (C1)</h3>
               <ul className="space-y-3">
-                {trackData.platforms.advanced.map((platform, i) => (
-                  <li key={i}>
-                    <a
-                      href={platform.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-green-600 dark:text-green-400 hover:underline font-medium"
-                    >
+                {trackData.platforms.advanced.map((platform) => (
+                  <li key={platform.name}>
+                    <a href={platform.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-green-600 dark:text-green-400 hover:underline font-medium">
                       → {platform.name}
                     </a>
                   </li>
@@ -227,9 +212,7 @@ function Roadmap({ trackData }) {
           <p className="text-lg mb-2">
             <strong>{trackData.finalRuleStudy}</strong>
           </p>
-          <p className="text-lg opacity-95">
-            {trackData.finalRuleLive}
-          </p>
+          <p className="text-lg opacity-95">{trackData.finalRuleLive}</p>
         </div>
       </div>
     </div>

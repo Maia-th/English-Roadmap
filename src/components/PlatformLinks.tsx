@@ -1,15 +1,19 @@
-import React from 'react'
 import { ExternalLink } from 'lucide-react'
+import type { TrackData } from '@/types'
 
-function PlatformLinks({ trackData }) {
+interface PlatformLinksProps {
+  trackData: TrackData
+}
+
+function PlatformLinks({ trackData }: PlatformLinksProps) {
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 mb-8">
       <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">🔗 Ferramentas Essenciais</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {trackData.tools.map((tool, index) => (
+        {trackData.tools.map((tool) => (
           <a
-            key={index}
+            key={`${trackData.id}-${tool.name}`}
             href={tool.url}
             target="_blank"
             rel="noopener noreferrer"

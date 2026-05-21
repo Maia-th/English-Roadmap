@@ -1,6 +1,8 @@
-export const defaultTrackId = 'english'
+import type { TrackData, TrackId } from '@/types'
 
-export const tracksData = {
+export const defaultTrackId: TrackId = 'english'
+
+export const tracksData: Record<TrackId, TrackData> = {
   english: {
     id: 'english',
     name: 'English Roadmap',
@@ -29,18 +31,8 @@ export const tracksData = {
         months: '1–2',
         objective: 'Construir base sólida',
         description: 'Desenvolver base de inglês com gramática básica, pronúncia e hábito diário.',
-        focus: [
-          'Present Simple, Past Simple, Future',
-          'Questions e Prepositions',
-          'Shadowing e frases simples',
-          'Auto conversação básica',
-        ],
-        goals: [
-          '✔ Entender inglês lento',
-          '✔ Criar frases básicas',
-          '✔ Ler textos simples',
-          '✔ Construir rotina diária',
-        ],
+        focus: ['Present Simple, Past Simple, Future', 'Questions e Prepositions', 'Shadowing e frases simples', 'Auto conversação básica'],
+        goals: ['✔ Entender inglês lento', '✔ Criar frases básicas', '✔ Ler textos simples', '✔ Construir rotina diária'],
         color: 'from-blue-500 to-cyan-500',
         icon: '🌱',
       },
@@ -50,18 +42,8 @@ export const tracksData = {
         months: '3–4',
         objective: 'Expandir vocabulário e naturalidade',
         description: 'Aumentar vocabulário, parar de usar português e começar exposição a conteúdo nativo.',
-        focus: [
-          'Present Perfect, Modal Verbs',
-          'Comparatives e Conditionals',
-          'Passive Voice',
-          'Vídeos nativos e podcasts',
-        ],
-        goals: [
-          '✔ Conversas básicas',
-          '✔ Pensar parcialmente em inglês',
-          '✔ Ler conteúdos técnicos simples',
-          '✔ Entender boa parte de vídeos',
-        ],
+        focus: ['Present Perfect, Modal Verbs', 'Comparatives e Conditionals', 'Passive Voice', 'Vídeos nativos e podcasts'],
+        goals: ['✔ Conversas básicas', '✔ Pensar parcialmente em inglês', '✔ Ler conteúdos técnicos simples', '✔ Entender boa parte de vídeos'],
         color: 'from-purple-500 to-pink-500',
         icon: '📈',
       },
@@ -71,18 +53,8 @@ export const tracksData = {
         months: '5–7',
         objective: 'Imersão total em inglês',
         description: 'Trocar ambiente para inglês: celular, navegador, documentação, ferramentas.',
-        focus: [
-          'Ambiente 100% em inglês',
-          'Conteúdo técnico avançado',
-          'Conversas longas e naturais',
-          'Estudar tecnologia em inglês',
-        ],
-        goals: [
-          '✔ Consumir conteúdo nativo',
-          '✔ Conversar naturalmente',
-          '✔ Entender inglês técnico',
-          '✔ Pensar parcialmente em inglês',
-        ],
+        focus: ['Ambiente 100% em inglês', 'Conteúdo técnico avançado', 'Conversas longas e naturais', 'Estudar tecnologia em inglês'],
+        goals: ['✔ Consumir conteúdo nativo', '✔ Conversar naturalmente', '✔ Entender inglês técnico', '✔ Pensar parcialmente em inglês'],
         color: 'from-red-500 to-orange-500',
         icon: '🔥',
       },
@@ -92,18 +64,8 @@ export const tracksData = {
         months: '8–10',
         objective: 'Dominar inglês profissional',
         description: 'Foco em comunicação profissional, reuniões, entrevistas e explicações técnicas.',
-        focus: [
-          'Explicar projetos tecnológicos',
-          'Defender ideias em inglês',
-          'Entrevistas e reuniões simuladas',
-          'Documentação e artigos técnicos',
-        ],
-        goals: [
-          '✔ Trabalhar parcialmente em inglês',
-          '✔ Participar de conversas técnicas',
-          '✔ Entender conteúdo complexo',
-          '✔ Melhorar naturalidade',
-        ],
+        focus: ['Explicar projetos tecnológicos', 'Defender ideias em inglês', 'Entrevistas e reuniões simuladas', 'Documentação e artigos técnicos'],
+        goals: ['✔ Trabalhar parcialmente em inglês', '✔ Participar de conversas técnicas', '✔ Entender conteúdo complexo', '✔ Melhorar naturalidade'],
         color: 'from-yellow-500 to-lime-500',
         icon: '💼',
       },
@@ -113,18 +75,8 @@ export const tracksData = {
         months: '11–12',
         objective: 'Alcançar fluidez avançada C1',
         description: 'Desenvolver naturalidade, velocidade mental e capacidade de trabalhar/estudar em inglês.',
-        focus: [
-          'Nuances da linguagem',
-          'Velocidade mental',
-          'Vocabulário sofisticado',
-          'Debates e argumentação',
-        ],
-        goals: [
-          '✔ Próximo do C1 funcional',
-          '✔ Entendimento confortável de conteúdo nativo',
-          '✔ Inglês profissional forte',
-          '✔ Conversação avançada',
-        ],
+        focus: ['Nuances da linguagem', 'Velocidade mental', 'Vocabulário sofisticado', 'Debates e argumentação'],
+        goals: ['✔ Próximo do C1 funcional', '✔ Entendimento confortável de conteúdo nativo', '✔ Inglês profissional forte', '✔ Conversação avançada'],
         color: 'from-green-500 to-emerald-500',
         icon: '🧠',
       },
@@ -162,27 +114,12 @@ export const tracksData = {
       { month: 12, goal: 'Debates e fluidez avançada' },
     ],
     levelIndicators: [
-      {
-        level: 'A2',
-        characteristics: ['Frases simples', 'Listening básico'],
-      },
-      {
-        level: 'B1',
-        characteristics: ['Conversas simples', 'Vídeos lentos'],
-      },
-      {
-        level: 'B2',
-        characteristics: ['Conteúdo nativo', 'Conversação funcional', 'Inglês técnico'],
-      },
+      { level: 'A2', characteristics: ['Frases simples', 'Listening básico'] },
+      { level: 'B1', characteristics: ['Conversas simples', 'Vídeos lentos'] },
+      { level: 'B2', characteristics: ['Conteúdo nativo', 'Conversação funcional', 'Inglês técnico'] },
       {
         level: 'C1',
-        characteristics: [
-          'Fluidez natural',
-          'Argumentação',
-          'Conteúdo complexo',
-          'Comunicação profissional',
-          'Pensamento direto em inglês',
-        ],
+        characteristics: ['Fluidez natural', 'Argumentação', 'Conteúdo complexo', 'Comunicação profissional', 'Pensamento direto em inglês'],
       },
     ],
     strategies: [
@@ -208,23 +145,8 @@ export const tracksData = {
         icon: '📈',
       },
     ],
-    mistakes: [
-      '❌ Traduzir tudo',
-      '❌ Estudar apenas gramática',
-      '❌ Não praticar speaking',
-      '❌ Consumir pouco inglês real',
-      '❌ Medo de errar',
-      '❌ Passar dias sem contato',
-    ],
-    accelerators: [
-      '✔ Consistência diária',
-      '✔ Shadowing',
-      '✔ Speaking desde o início',
-      '✔ Conteúdo real',
-      '✔ Imersão parcial',
-      '✔ Tecnologia em inglês',
-      '✔ Pensar em inglês',
-    ],
+    mistakes: ['❌ Traduzir tudo', '❌ Estudar apenas gramática', '❌ Não praticar speaking', '❌ Consumir pouco inglês real', '❌ Medo de errar', '❌ Passar dias sem contato'],
+    accelerators: ['✔ Consistência diária', '✔ Shadowing', '✔ Speaking desde o início', '✔ Conteúdo real', '✔ Imersão parcial', '✔ Tecnologia em inglês', '✔ Pensar em inglês'],
   },
   spanish: {
     id: 'spanish',
@@ -254,18 +176,8 @@ export const tracksData = {
         months: '1–2',
         objective: 'Construir base sólida em espanhol',
         description: 'Foco em input compreensível, pronúncia, estruturas básicas e rotina diária.',
-        focus: [
-          'Dreaming Spanish diariamente',
-          'Presente, passado, futuro e perguntas',
-          'Gênero e preposições',
-          'Shadowing, frases simples e auto conversação',
-        ],
-        goals: [
-          '✔ Entender espanhol lento',
-          '✔ Criar frases básicas',
-          '✔ Reduzir dependência do português',
-          '✔ Construir rotina diária',
-        ],
+        focus: ['Dreaming Spanish diariamente', 'Presente, passado, futuro e perguntas', 'Gênero e preposições', 'Shadowing, frases simples e auto conversação'],
+        goals: ['✔ Entender espanhol lento', '✔ Criar frases básicas', '✔ Reduzir dependência do português', '✔ Construir rotina diária'],
         color: 'from-blue-500 to-cyan-500',
         icon: '🌱',
       },
@@ -275,18 +187,8 @@ export const tracksData = {
         months: '3–4',
         objective: 'Expandir vocabulário e exposição nativa',
         description: 'Parar de traduzir constantemente e começar mais conteúdo real em espanhol.',
-        focus: [
-          'Pretérito, subjuntivo básico e comparações',
-          'Conectores e pronomes',
-          'Podcasts e vídeos nativos',
-          'Mais speaking e menos tradução mental',
-        ],
-        goals: [
-          '✔ Conversas básicas',
-          '✔ Vídeos sem legenda',
-          '✔ Leitura confortável',
-          '✔ Pensar parcialmente em espanhol',
-        ],
+        focus: ['Pretérito, subjuntivo básico e comparações', 'Conectores e pronomes', 'Podcasts e vídeos nativos', 'Mais speaking e menos tradução mental'],
+        goals: ['✔ Conversas básicas', '✔ Vídeos sem legenda', '✔ Leitura confortável', '✔ Pensar parcialmente em espanhol'],
         color: 'from-purple-500 to-pink-500',
         icon: '📈',
       },
@@ -296,18 +198,8 @@ export const tracksData = {
         months: '5–7',
         objective: 'Imersão com ambiente em espanhol',
         description: 'Trocar ferramentas e consumo digital para espanhol com foco em naturalidade.',
-        focus: [
-          'Celular, navegador e redes em espanhol',
-          'Conteúdo nativo e técnico',
-          'Conversas longas e naturais',
-          'Tecnologia e estudos em espanhol',
-        ],
-        goals: [
-          '✔ Consumir conteúdo nativo',
-          '✔ Conversar naturalmente',
-          '✔ Entender espanhol rápido',
-          '✔ Consumir tecnologia em espanhol',
-        ],
+        focus: ['Celular, navegador e redes em espanhol', 'Conteúdo nativo e técnico', 'Conversas longas e naturais', 'Tecnologia e estudos em espanhol'],
+        goals: ['✔ Consumir conteúdo nativo', '✔ Conversar naturalmente', '✔ Entender espanhol rápido', '✔ Consumir tecnologia em espanhol'],
         color: 'from-red-500 to-orange-500',
         icon: '🔥',
       },
@@ -317,18 +209,8 @@ export const tracksData = {
         months: '8–10',
         objective: 'Dominar comunicação profissional',
         description: 'Foco em reuniões, entrevistas, apresentações e discussões técnicas.',
-        focus: [
-          'Explicar projetos e defender ideias',
-          'Simular entrevistas e reuniões',
-          'Debates e conteúdo técnico avançado',
-          'Documentação e escrita argumentativa',
-        ],
-        goals: [
-          '✔ Trabalhar parcialmente em espanhol',
-          '✔ Participar de discussões técnicas',
-          '✔ Entender conteúdo complexo',
-          '✔ Melhorar naturalidade',
-        ],
+        focus: ['Explicar projetos e defender ideias', 'Simular entrevistas e reuniões', 'Debates e conteúdo técnico avançado', 'Documentação e escrita argumentativa'],
+        goals: ['✔ Trabalhar parcialmente em espanhol', '✔ Participar de discussões técnicas', '✔ Entender conteúdo complexo', '✔ Melhorar naturalidade'],
         color: 'from-yellow-500 to-lime-500',
         icon: '💼',
       },
@@ -338,18 +220,8 @@ export const tracksData = {
         months: '11–12',
         objective: 'Fluidez avançada e naturalidade C1',
         description: 'Desenvolver nuances, velocidade mental e fluidez espontânea para contexto profissional.',
-        focus: [
-          'Naturalidade e nuances do idioma',
-          'Fast listening com conteúdo complexo',
-          'Vocabulário sofisticado',
-          'Discussões avançadas e temas abstratos',
-        ],
-        goals: [
-          '✔ Próximo do C1 funcional',
-          '✔ Espanhol natural',
-          '✔ Conversação avançada',
-          '✔ Capacidade profissional em espanhol',
-        ],
+        focus: ['Naturalidade e nuances do idioma', 'Fast listening com conteúdo complexo', 'Vocabulário sofisticado', 'Discussões avançadas e temas abstratos'],
+        goals: ['✔ Próximo do C1 funcional', '✔ Espanhol natural', '✔ Conversação avançada', '✔ Capacidade profissional em espanhol'],
         color: 'from-green-500 to-emerald-500',
         icon: '🧠',
       },
@@ -387,27 +259,12 @@ export const tracksData = {
       { month: 12, goal: 'Debates e fluidez avançada' },
     ],
     levelIndicators: [
-      {
-        level: 'A2',
-        characteristics: ['Frases simples', 'Listening básico'],
-      },
-      {
-        level: 'B1',
-        characteristics: ['Conversas simples', 'Vídeos lentos'],
-      },
-      {
-        level: 'B2',
-        characteristics: ['Conteúdo nativo', 'Conversação funcional', 'Espanhol técnico'],
-      },
+      { level: 'A2', characteristics: ['Frases simples', 'Listening básico'] },
+      { level: 'B1', characteristics: ['Conversas simples', 'Vídeos lentos'] },
+      { level: 'B2', characteristics: ['Conteúdo nativo', 'Conversação funcional', 'Espanhol técnico'] },
       {
         level: 'C1',
-        characteristics: [
-          'Fluidez natural',
-          'Argumentação',
-          'Conteúdo complexo',
-          'Comunicação profissional',
-          'Pensamento direto em espanhol',
-        ],
+        characteristics: ['Fluidez natural', 'Argumentação', 'Conteúdo complexo', 'Comunicação profissional', 'Pensamento direto em espanhol'],
       },
     ],
     strategies: [
@@ -433,26 +290,12 @@ export const tracksData = {
         icon: '🌍',
       },
     ],
-    mistakes: [
-      '❌ Portunhol',
-      '❌ Traduzir tudo',
-      '❌ Copiar estrutura do português',
-      '❌ Não praticar speaking',
-      '❌ Consumir pouco espanhol real',
-    ],
-    accelerators: [
-      '✔ Dreaming Spanish',
-      '✔ Consistência diária',
-      '✔ Speaking desde o início',
-      '✔ Shadowing',
-      '✔ Conteúdo real',
-      '✔ Pensar em espanhol',
-      '✔ Imersão parcial',
-    ],
+    mistakes: ['❌ Portunhol', '❌ Traduzir tudo', '❌ Copiar estrutura do português', '❌ Não praticar speaking', '❌ Consumir pouco espanhol real'],
+    accelerators: ['✔ Dreaming Spanish', '✔ Consistência diária', '✔ Speaking desde o início', '✔ Shadowing', '✔ Conteúdo real', '✔ Pensar em espanhol', '✔ Imersão parcial'],
   },
 }
 
-export const getTrackData = (trackId = defaultTrackId) => tracksData[trackId] || tracksData[defaultTrackId]
+export const getTrackData = (trackId: TrackId = defaultTrackId): TrackData => tracksData[trackId] || tracksData[defaultTrackId]
 
 export const roadmapData = getTrackData(defaultTrackId)
 

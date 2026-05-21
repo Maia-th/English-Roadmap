@@ -102,7 +102,7 @@ function DailyOffensive({ trackId, trackData }) {
           </p>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-6 rounded-lg text-white shadow-lg">
+        <div className={`bg-gradient-to-br ${trackData.todayCardGradient} p-6 rounded-lg text-white shadow-lg`}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Hoje</h3>
             <TrendingUp size={28} />

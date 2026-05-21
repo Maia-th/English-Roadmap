@@ -1,14 +1,13 @@
 import React from 'react'
 import { ExternalLink } from 'lucide-react'
-import { roadmapData } from '../data/roadmapData'
 
-function PlatformLinks() {
+function PlatformLinks({ trackData }) {
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 mb-8">
       <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">🔗 Ferramentas Essenciais</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {roadmapData.tools.map((tool, index) => (
+        {trackData.tools.map((tool, index) => (
           <a
             key={index}
             href={tool.url}

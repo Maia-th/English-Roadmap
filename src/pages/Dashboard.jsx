@@ -4,41 +4,36 @@ import DailyRoutine from '../components/DailyRoutine'
 import PlatformLinks from '../components/PlatformLinks'
 import HistoryCalendar from '../components/HistoryCalendar'
 
-function Dashboard() {
+function Dashboard({ trackId, trackData }) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-950 dark:to-gray-900 py-8">
+    <div className={`min-h-screen bg-gradient-to-b ${trackData.dashboardGradient} py-8`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Hero Section */}
         <div className="mb-12">
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-2">
-            🚀 Bem-vindo ao seu Dashboard
+            {trackData.dashboardTitle}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg">
-            Acompanhe seu progresso diário rumo ao C1 em 12 meses
+            {trackData.dashboardSubtitle}
           </p>
         </div>
 
-        {/* 1. Ofensiva (Streak, Hoje, Fase) */}
         <section className="mb-12">
-          <DailyOffensive />
+          <DailyOffensive trackId={trackId} trackData={trackData} />
         </section>
 
-        {/* 2. Rotina Diária (Cards com Checkboxes) */}
         <section className="mb-12">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">⏰ Rotina Diária (3h)</h2>
-            <DailyRoutine />
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">{trackData.dailyRoutineTitle}</h2>
+            <DailyRoutine trackId={trackId} />
           </div>
         </section>
 
-        {/* 3. Links das Ferramentas */}
         <section className="mb-12">
-          <PlatformLinks />
+          <PlatformLinks trackData={trackData} />
         </section>
 
-        {/* 4. Histórico */}
         <section>
-          <HistoryCalendar />
+          <HistoryCalendar trackId={trackId} />
         </section>
       </div>
     </div>

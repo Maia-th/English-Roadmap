@@ -103,7 +103,9 @@ const logout = (): void => {
 const resetPassword = (email: string): void => {
   const user = db.users.findByEmail(email.trim().toLowerCase())
   if (!user) throw new Error('Não encontramos conta com este email.')
-  const temporaryPassword = `Temp${Math.random().toString(36).slice(-6)}!`
+  const buffer = new Uint8Array(6)
+  crypto.getRandomValues(buffer)
+  const temporaryPassword = `Temp${Array.from(buffer, (value) => (value % 36).toString(36)).join('')}!`
   // Mock requested in prompt.
   // eslint-disable-next-line no-console
   console.log(`Senha temporária para ${email}: ${temporaryPassword}`)

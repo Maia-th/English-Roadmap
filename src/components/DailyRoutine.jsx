@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Trash2, AlertTriangle } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import dataService from '../services/dataService'
 import ResetConfirmation from './ResetConfirmation'
 
-function DailyRoutine() {
+function DailyRoutine({ trackId }) {
   const [tasks, setTasks] = useState([])
   const [lastUpdated, setLastUpdated] = useState(null)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
@@ -11,20 +11,19 @@ function DailyRoutine() {
 
   useEffect(() => {
     loadProgress()
-    // REMOVIDO: O setInterval() que rodava a cada segundo foi removido.
-    // Ele deixava a aplicação pesada e não era necessário, pois o estado 
-    // já é atualizado localmente nas funções de clique (toggle e reset).
-  }, [])
+  }, [trackId])
 
   const loadProgress = async () => {
-    const progress = await dataService.getTodayProgress()
-    const data = await dataService.getAllData()
+    setIsLoading(true)
+    await dataService.initialize(trackId)
+    const progress = await dataService.getTodayProgress(trackId)
+    const data = await dataService.getAllData(trackId)
+
     setTasks(data.dailyTasks.map((task, index) => ({
       ...task,
       completed: progress.tasks[index] || false,
     })))
-    
-    // Garantindo que a data seja lida corretamente e não quebre se for null
+
     setLastUpdated(progress.lastUpdated ? new Date(progress.lastUpdated) : null)
     setIsLoading(false)
   }
@@ -33,15 +32,14 @@ function DailyRoutine() {
     const newTasks = [...tasks]
     newTasks[index].completed = !newTasks[index].completed
     setTasks(newTasks)
-    
-    // Atualiza no service e já seta a hora atual no front-end imediatamente
-    await dataService.updateDailyProgress(index, newTasks[index].completed)
+
+    await dataService.updateDailyProgress(index, newTasks[index].completed, trackId)
     setLastUpdated(new Date())
   }
 
   const handleReset = async (confirmed) => {
     if (confirmed) {
-      await dataService.resetDailyProgress(true)
+      await dataService.resetDailyProgress(true, trackId)
       setTasks(tasks.map(t => ({ ...t, completed: false })))
       setLastUpdated(new Date())
     }
@@ -59,8 +57,6 @@ function DailyRoutine() {
 
   const completedCount = tasks.filter(t => t.completed).length
   const totalCount = tasks.length
-  
-  // Proteção: Previne o erro "NaN" caso totalCount seja 0
   const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
 
   if (isLoading) {
@@ -75,7 +71,6 @@ function DailyRoutine() {
 
   return (
     <div>
-      {/* Cards da Rotina */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {tasks.map((task, index) => (
           <div
@@ -114,7 +109,6 @@ function DailyRoutine() {
         ))}
       </div>
 
-      {/* Barra de Progresso Geral */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
@@ -137,7 +131,6 @@ function DailyRoutine() {
         </div>
       </div>
 
-      {/* Info e Reset */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-sm text-gray-600 dark:text-gray-400">
           <p>Última atualização: <span className="font-semibold">{formatTime(lastUpdated)}</span></p>
@@ -151,7 +144,6 @@ function DailyRoutine() {
         </button>
       </div>
 
-      {/* Modal de Confirmação */}
       {showResetConfirm && (
         <ResetConfirmation
           onConfirm={() => handleReset(true)}

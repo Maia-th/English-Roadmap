@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
 import dataService from '../services/dataService'
 
-// Função auxiliar para evitar o bug de fuso horário do toISOString()
 const getLocalDateString = (date) => {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -10,42 +9,36 @@ const getLocalDateString = (date) => {
   return `${year}-${month}-${day}`
 }
 
-function HistoryCalendar() {
+function HistoryCalendar({ trackId }) {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [history, setHistory] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [showTooltip, setShowTooltip] = useState(null)
 
   useEffect(() => {
-    // Carrega a primeira vez e remove o loading
     loadHistory().then(() => setIsLoading(false))
-    
-    // Configura o intervalo para atualizar o calendário sozinho a cada 5 segundos
-    // (Igual foi feito no componente de ofensiva)
+
     const interval = setInterval(() => {
-      loadHistory(false) // false indica que não queremos mostrar a tela de 'Carregando' a cada 5s
+      loadHistory(false)
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [currentMonth])
+  }, [currentMonth, trackId])
 
   const loadHistory = async (showLoading = true) => {
     if (showLoading) setIsLoading(true)
+    await dataService.initialize(trackId)
+
     const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
     const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
-    
-    const filtered = await dataService.getHistoryFiltered(firstDay, lastDay)
+
+    const filtered = await dataService.getHistoryFiltered(firstDay, lastDay, trackId)
     setHistory(filtered)
-    // Nota: O setIsLoading(false) da primeira carga agora é gerido no useEffect
   }
 
-  const getDaysInMonth = (date) => {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
-  }
+  const getDaysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
 
-  const getFirstDayOfMonth = (date) => {
-    return new Date(date.getFullYear(), date.getMonth(), 1).getDay()
-  }
+  const getFirstDayOfMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay()
 
   const getCompletionPercentage = (dateStr) => {
     if (!history[dateStr]) return 0
@@ -54,20 +47,15 @@ function HistoryCalendar() {
     return Math.round((completed / history[dateStr].tasks.length) * 100)
   }
 
-  const getDayColor = (dateStr, percentage) => {
-    // CORREÇÃO 1: Se a porcentagem é 0, independente de existir ou não no histórico,
-    // a cor deve ser a neutra (cinza).
+  const getDayColor = (_, percentage) => {
     if (percentage === 0) {
       return 'bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
     }
-    
-    // Se for maior que 0, entra nas regras de cor:
+
     if (percentage === 100) return 'bg-green-700 hover:bg-green-800 text-white'
     if (percentage >= 75) return 'bg-green-500 hover:bg-green-600 text-white'
     if (percentage >= 50) return 'bg-emerald-300 hover:bg-emerald-400 text-gray-900'
     if (percentage >= 25) return 'bg-amber-300 hover:bg-amber-400 text-gray-900'
-    
-    // Fallback para 1% a 24% (já que 0% foi tratado no começo)
     return 'bg-orange-300 hover:bg-orange-400 text-gray-900'
   }
 
@@ -76,19 +64,15 @@ function HistoryCalendar() {
   const firstDay = getFirstDayOfMonth(currentMonth)
   const todayStr = getLocalDateString(new Date())
 
-  // Dias vazios antes do primeiro dia do mês
-  for (let i = 0; i < firstDay; i++) {
-    days.push(null)
-  }
+  for (let i = 0; i < firstDay; i++) days.push(null)
 
-  // Dias do mês
   for (let i = 1; i <= daysInMonth; i++) {
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i)
     days.push(getLocalDateString(date))
   }
 
   const monthName = currentMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
-  
+
   const completedDaysInMonth = Object.entries(history).filter(([dateStr, day]) => {
     const [year, month] = dateStr.split('-')
     return (
@@ -133,8 +117,6 @@ function HistoryCalendar() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
-        
-        {/* Legenda */}
         <div className="w-full lg:w-48 xl:w-56 flex-shrink-0">
           <h3 className="text-sm font-semibold mb-3 hidden lg:block text-gray-700 dark:text-gray-300">
             Legenda
@@ -167,7 +149,6 @@ function HistoryCalendar() {
           </div>
         </div>
 
-        {/* Calendário */}
         <div className="w-full lg:flex-1 overflow-x-auto">
           <div className="min-w-[250px] lg:max-w-full lg:h-[350px] flex flex-col rounded-xl border border-gray-100 dark:border-gray-700 p-2 sm:p-3 mx-auto">
             <div className="grid grid-cols-7 lg:grid-rows-7 gap-1 sm:gap-2 flex-1">
@@ -220,7 +201,6 @@ function HistoryCalendar() {
             <p className="text-sm text-center text-gray-500 dark:text-gray-400 mt-3">Carregando histórico...</p>
           )}
         </div>
-        
       </div>
     </div>
   )

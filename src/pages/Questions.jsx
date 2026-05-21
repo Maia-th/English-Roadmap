@@ -7,7 +7,7 @@ function Questions() {
   const [activeQuestions, setActiveQuestions] = useState([])
   const [levelFilter, setLevelFilter] = useState('All')
   const [themeFilter, setThemeFilter] = useState('All')
-  const [visibilityFilter, setVisibilityFilter] = useState('All') 
+  const [visibilityFilter, setVisibilityFilter] = useState('Unseen3Days') 
   const [shuffleSeed, setShuffleSeed] = useState(0)
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)

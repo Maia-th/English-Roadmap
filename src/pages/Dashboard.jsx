@@ -37,14 +37,12 @@ function Dashboard() {
           <PlatformLinks />
         </section>
 
-        {/* ESTATÍSTICAS DE QUESTÕES */}
+        {/* ESTATÍSTICAS UNIFICADAS: Questões e Flashcards */}
         <section>
-          <QuestionStats />
-        </section>
-
-        {/* ESTATÍSTICAS DE FLASHCARDS */}
-        <section>
-          <FlashcardStats />
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <QuestionStats />
+            <FlashcardStats />
+          </div>
         </section>
 
         {/* HISTÓRICO */}

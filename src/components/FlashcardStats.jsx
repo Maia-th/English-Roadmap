@@ -1,34 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { Layers, CheckCircle2, Clock } from 'lucide-react'
 import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid,
-  PieChart, Pie, Cell
+  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid, Cell
 } from 'recharts'
 import dataService from '../services/dataService'
 import { flashcardsData } from '../data/flashcardsData'
 
 const THEME_COLORS = [
-  '#3B82F6', // Blue
-  '#10B981', // Emerald
-  '#F59E0B', // Amber
-  '#8B5CF6', // Violet
-  '#EC4899', // Pink
-  '#14B8A6', // Teal
-  '#F43F5E', // Rose
+  '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#14B8A6', '#F43F5E'
 ]
 
 const CustomBarLabel = ({ x, y, width, height, value }) => {
   if (!value || value === 0) return null;
   return (
-    <text 
-      x={x + width / 2} 
-      y={y + height / 2} 
-      fill="#ffffff" 
-      textAnchor="middle" 
-      dominantBaseline="central" 
-      fontSize={12} 
-      fontWeight="bold"
-    >
+    <text x={x + width / 2} y={y + height / 2} fill="#ffffff" textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight="bold">
       {value}
     </text>
   );
@@ -44,14 +29,9 @@ function FlashcardStats() {
 
   const loadStats = async () => {
     const statusData = await dataService.getFlashcardsStatus()
-    
-    let total = 0
-    let mastered = 0
-    let review = 0
-    const byLevel = {}
-    const byTheme = {}
+    let total = 0, mastered = 0, review = 0
+    const byLevel = {}, byTheme = {}
 
-    // Processa os dados cruzando o progresso salvo com a base de flashcards
     flashcardsData.forEach(card => {
       const cardStatus = statusData[card.id]
       if (cardStatus) {
@@ -59,35 +39,30 @@ function FlashcardStats() {
         if (cardStatus.status === 'mastered') mastered++
         else if (cardStatus.status === 'review') review++
 
-        // Agrupar por Nível
         if (!byLevel[card.level]) byLevel[card.level] = { mastered: 0, review: 0 }
         if (cardStatus.status === 'mastered') byLevel[card.level].mastered++
         else if (cardStatus.status === 'review') byLevel[card.level].review++
 
-        // Agrupar por Tema (Conta o total de interações no tema)
         if (!byTheme[card.theme]) byTheme[card.theme] = 0
         byTheme[card.theme]++
       }
     })
-
     setStats({ total, mastered, review, byLevel, byTheme })
     setIsLoading(false)
   }
 
   const masteryRate = stats.total > 0 ? Math.round((stats.mastered / stats.total) * 100) : 0
-
-  // 1. Dados para o Gráfico de Barras (Nível)
+  
   const levelData = Object.keys(stats.byLevel).map(key => ({
     name: key,
     Dominados: stats.byLevel[key].mastered,
     Revisar: stats.byLevel[key].review,
   })).sort((a, b) => a.name.localeCompare(b.name))
 
-  // 2. Dados para o Gráfico de Rosca (Tema)
-  const themeDonutData = Object.keys(stats.byTheme).map(key => ({
+  const themeBarData = Object.keys(stats.byTheme).map(key => ({
     name: key,
     value: stats.byTheme[key]
-  })).filter(item => item.value > 0)
+  }))
 
   if (isLoading) return <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
 
@@ -103,60 +78,39 @@ function FlashcardStats() {
         </span>
       </div>
 
-      {/* Cards de Resumo */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-600">
           <div className="text-gray-500 dark:text-gray-400 text-sm font-semibold mb-1">Total Vistos</div>
           <div className="text-3xl font-bold text-gray-800 dark:text-gray-100">{stats.total}</div>
         </div>
-        
         <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-800/50">
-          <div className="flex items-center gap-2 text-green-700 dark:text-green-400 text-sm font-semibold mb-1">
-            <CheckCircle2 size={16} /> Dominados
-          </div>
+          <div className="flex items-center gap-2 text-green-700 dark:text-green-400 text-sm font-semibold mb-1"><CheckCircle2 size={16} /> Dominados</div>
           <div className="text-3xl font-bold text-green-700 dark:text-green-500">{stats.mastered}</div>
         </div>
-
         <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-800/50">
-          <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm font-semibold mb-1">
-            <Clock size={16} /> Para Revisão
-          </div>
+          <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm font-semibold mb-1"><Clock size={16} /> Para Revisão</div>
           <div className="text-3xl font-bold text-red-600 dark:text-red-500">{stats.review}</div>
         </div>
       </div>
 
-      {/* Gráficos */}
       {stats.total > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* Gráfico 1: Rosca (Flashcards por Tema) */}
+          {/* Gráfico 1: Barras Horizontais (Vistos por Tema) */}
           <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
-            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2 text-center">Vistos por Tema</h3>
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 text-center">Vistos por Tema</h3>
             <div className="h-64 w-full"> 
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={themeDonutData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={75}
-                    paddingAngle={5}
-                    dataKey="value"
-                    label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-                    labelLine={{ stroke: '#888888', strokeWidth: 1, opacity: 0.5 }}
-                  >
-                    {themeDonutData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={THEME_COLORS[index % THEME_COLORS.length]} stroke="transparent" />
+                <BarChart data={themeBarData} layout="vertical" margin={{ top: 0, right: 40, left: 20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#52525b" opacity={0.1} />
+                  <YAxis dataKey="name" type="category" tick={{fill: '#888888', fontSize: 12}} axisLine={false} tickLine={false} />
+                  <XAxis type="number" hide={true} />
+                  <Tooltip cursor={{fill: '#888888', opacity: 0.1}} contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', color: '#f3f4f6', borderRadius: '0.5rem' }} />
+                  <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={30} label={{ position: 'right', fill: '#888888', fontSize: 12 }}>
+                    {themeBarData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={THEME_COLORS[index % THEME_COLORS.length]} />
                     ))}
-                  </Pie>
-                  <Tooltip 
-                    cursor={{fill: '#888888', opacity: 0.1}} 
-                    contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', color: '#f3f4f6', borderRadius: '0.5rem' }}
-                    itemStyle={{ color: '#e5e7eb' }}
-                  />
-                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ color: '#888888', fontSize: '14px', paddingTop: '20px' }} />
-                </PieChart>
+                  </Bar>
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
@@ -170,10 +124,7 @@ function FlashcardStats() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#52525b" opacity={0.1} />
                   <XAxis dataKey="name" tick={{fill: '#888888'}} axisLine={false} tickLine={false} />
                   <YAxis hide={true} />
-                  <Tooltip 
-                    cursor={{fill: '#888888', opacity: 0.1}} 
-                    contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', color: '#f3f4f6', borderRadius: '0.5rem' }}
-                  />
+                  <Tooltip cursor={{fill: '#888888', opacity: 0.1}} contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', color: '#f3f4f6', borderRadius: '0.5rem' }} />
                   <Legend verticalAlign="bottom" align="center" wrapperStyle={{ color: '#888888', fontSize: '14px', paddingTop: '10px' }} />
                   <Bar dataKey="Dominados" stackId="a" fill="#22c55e" radius={[0, 0, 4, 4]} maxBarSize={50} label={<CustomBarLabel />} />
                   <Bar dataKey="Revisar" stackId="a" fill="#ef4444" radius={[4, 4, 0, 0]} maxBarSize={50} label={<CustomBarLabel />} />
@@ -181,7 +132,6 @@ function FlashcardStats() {
               </ResponsiveContainer>
             </div>
           </div>
-
         </div>
       )}
     </div>

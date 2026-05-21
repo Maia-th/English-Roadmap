@@ -7,7 +7,7 @@ function Flashcards() {
   const [statusData, setStatusData] = useState({})
   const [levelFilter, setLevelFilter] = useState('All')
   const [themeFilter, setThemeFilter] = useState('All')
-  const [statusFilter, setStatusFilter] = useState('All') // 'All', 'Review', 'Mastered', 'New', 'Unseen3Days'
+  const [statusFilter, setStatusFilter] = useState('Unseen3Days') // 'All', 'Review', 'Mastered', 'New', 'Unseen3Days'
   
   const [shuffleSeed, setShuffleSeed] = useState(0)
   const [currentIndex, setCurrentIndex] = useState(0)

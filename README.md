@@ -1,4 +1,4 @@
-# 🇺🇸 English Roadmap - C1 em 12 Meses (Versão Beta)
+# 🇺🇸 English Roadmap (Versão Beta)
 
 Aplicação web para gerenciar seu progresso no roadmap de inglês, atingindo nível C1 em 12 meses com 3h de estudo diário.
 

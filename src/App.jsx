@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Sun, Moon, BookOpen, BarChart3 } from 'lucide-react'
+import { Sun, Moon, BookOpen, BarChart3, HelpCircle } from 'lucide-react'
 import Dashboard from './pages/Dashboard'
 import Roadmap from './pages/Roadmap'
+import Questions from './pages/Questions'
 import './App.css'
 
 function App() {
@@ -42,10 +43,10 @@ function App() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex items-center gap-6">
+            <nav className="flex items-center gap-2 sm:gap-6">
               <button
                 onClick={() => setCurrentPage('dashboard')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-smooth ${
+                className={`flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-smooth ${
                   currentPage === 'dashboard'
                     ? 'bg-blue-600 text-white'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -56,8 +57,20 @@ function App() {
               </button>
 
               <button
+                onClick={() => setCurrentPage('questions')}
+                className={`flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-smooth ${
+                  currentPage === 'questions'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                }`}
+              >
+                <HelpCircle size={20} />
+                <span className="hidden sm:inline">Questões</span>
+              </button>
+
+              <button
                 onClick={() => setCurrentPage('roadmap')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-smooth ${
+                className={`flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-medium transition-smooth ${
                   currentPage === 'roadmap'
                     ? 'bg-blue-600 text-white'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -70,7 +83,7 @@ function App() {
               {/* Theme Toggle */}
               <button
                 onClick={() => setIsDark(!isDark)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-smooth"
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-smooth ml-2"
                 aria-label="Toggle theme"
               >
                 {isDark ? <Sun size={20} /> : <Moon size={20} />}
@@ -83,11 +96,12 @@ function App() {
       {/* Main Content */}
       <main className="min-h-screen">
         {currentPage === 'dashboard' && <Dashboard />}
+        {currentPage === 'questions' && <Questions />}
         {currentPage === 'roadmap' && <Roadmap />}
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-8 mt-16">
+      <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-8 mt-16 transition-smooth">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-gray-600 dark:text-gray-400 text-sm">

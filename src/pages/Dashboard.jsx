@@ -3,6 +3,7 @@ import DailyOffensive from '../components/DailyOffensive'
 import DailyRoutine from '../components/DailyRoutine'
 import PlatformLinks from '../components/PlatformLinks'
 import HistoryCalendar from '../components/HistoryCalendar'
+import QuestionStats from '../components/QuestionStats'
 
 function Dashboard() {
   return (
@@ -36,7 +37,12 @@ function Dashboard() {
           <PlatformLinks />
         </section>
 
-        {/* 4. Histórico */}
+        {/* 4. Desempenho em Questões */}
+        <section>
+          <QuestionStats />
+        </section>
+
+        {/* 5. Histórico */}
         <section>
           <HistoryCalendar />
         </section>

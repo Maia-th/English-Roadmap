@@ -11,7 +11,7 @@ function Roadmap() {
         {/* Hero */}
         <div className="mb-12 text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            📊 Roadmap - C1 em 12 Meses
+            Roadmap - C1 em 12 Meses
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
             Estrutura completa com 5 fases progressivas para alcançar o nível C1 de inglês

@@ -22,6 +22,8 @@ const defaultData = {
   history: {}, // { YYYY-MM-DD: { tasks: [true, false, ...], lastUpdated: timestamp } }
   currentPhase: 1,
   startDate: new Date(2026, 0, 1).toISOString(),
+  questionStats: { total: 0, correct: 0, wrong: 0 },
+  answeredQuestions: {} // Estrutura: { 'q1': { lastSeen: '2026-05-18T...', isCorrect: true } }
 }
 
 const defaultSettings = {
@@ -75,16 +77,15 @@ const dataService = {
   // Obter progresso de hoje
   getTodayProgress: async () => {
     await delay()
-    const today = getLocalDateString() // Correção aplicada aqui
+    const today = getLocalDateString()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
     
     if (!data.history[today]) {
-      // Se é um novo dia, verificar se deve resetar
       const lastDay = Object.keys(data.history).sort().pop()
       if (lastDay !== today) {
         data.history[today] = {
           tasks: data.dailyTasks.map(() => false),
-          lastUpdated: new Date().toISOString(), // lastUpdated pode continuar UTC pois é só pra marcação de tempo
+          lastUpdated: new Date().toISOString(),
         }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
       }
@@ -99,7 +100,7 @@ const dataService = {
   // Atualizar progresso diário
   updateDailyProgress: async (taskIndex, completed) => {
     await delay()
-    const today = getLocalDateString() // Correção aplicada aqui
+    const today = getLocalDateString()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
 
     if (!data.history[today]) {
@@ -123,7 +124,7 @@ const dataService = {
       return { requiresConfirmation: true }
     }
 
-    const today = getLocalDateString() // Correção aplicada aqui
+    const today = getLocalDateString()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
 
     data.history[today] = {
@@ -146,18 +147,15 @@ const dataService = {
     let streak = 0
     let currentDate = new Date()
 
-    // 1. Verifica HOJE
-    const todayStr = getLocalDateString(currentDate) // Usa a função de data local que criamos antes
+    const todayStr = getLocalDateString(currentDate)
     const todayData = history[todayStr]
     
-    // Se hoje tem dados e todas as tarefas estão completas (100%)
     const isTodayCompleted = todayData && todayData.tasks.length > 0 && todayData.tasks.every(task => task)
     
     if (isTodayCompleted) {
       streak++
     }
 
-    // 2. Volta dia por dia, começando por ONTEM
     currentDate.setDate(currentDate.getDate() - 1)
 
     while (true) {
@@ -167,10 +165,9 @@ const dataService = {
       const isCompleted = dayData && dayData.tasks.length > 0 && dayData.tasks.every(task => task)
 
       if (isCompleted) {
-        streak++ // Se ontem (e dias anteriores) completou 100%, soma na ofensiva
-        currentDate.setDate(currentDate.getDate() - 1) // Volta mais um dia
+        streak++
+        currentDate.setDate(currentDate.getDate() - 1)
       } else {
-        // Se achou um dia no passado que não foi 100%, a ofensiva é quebrada
         break
       }
     }
@@ -183,7 +180,7 @@ const dataService = {
     await delay()
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
     const history = data.history
-    const today = getLocalDateString() // Correção aplicada aqui
+    const today = getLocalDateString()
     const todayData = history[today]
 
     const totalDays = Object.keys(history).length
@@ -194,9 +191,7 @@ const dataService = {
     const todayCompleted = todayData ? todayData.tasks.filter(t => t).length : 0
     const totalTasks = data.dailyTasks.length
 
-    // Calcular fase baseado no tempo (simplificado)
     const phase = calculatePhaseFromStartDate(data.startDate)
-
     const proficiencyLevel = await dataService.getProficiencyLevel(phase)
 
     return {
@@ -285,6 +280,44 @@ const dataService = {
     if (percentage >= 50) return 'bg-green-300'
     if (percentage >= 25) return 'bg-yellow-300'
     return 'bg-orange-300'
+  },
+
+  // Obter estatísticas das questões
+  getQuestionStats: async () => {
+    await delay()
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
+    return data.questionStats || { total: 0, correct: 0, wrong: 0 }
+  },
+
+  // Obter questões respondidas
+  getAnsweredQuestions: async () => {
+    await delay()
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
+    return data.answeredQuestions || {}
+  },
+
+  // Salvar resposta de questão
+  saveQuestionAnswer: async (questionId, isCorrect) => {
+    await delay()
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || JSON.stringify(defaultData))
+    
+    if (!data.questionStats) data.questionStats = { total: 0, correct: 0, wrong: 0 }
+    if (!data.answeredQuestions) data.answeredQuestions = {}
+
+    data.questionStats.total += 1
+    if (isCorrect) {
+      data.questionStats.correct += 1
+    } else {
+      data.questionStats.wrong += 1
+    }
+
+    data.answeredQuestions[questionId] = {
+      lastSeen: new Date().toISOString(),
+      isCorrect: isCorrect
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    return { stats: data.questionStats, answered: data.answeredQuestions }
   },
 
   // Resetar tudo (para testes)
